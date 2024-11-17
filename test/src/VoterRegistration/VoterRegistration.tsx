@@ -13,6 +13,15 @@ const VoterRegistration = () => {
     const [activeTab, setActiveTab] = useState('register');
     const [searchTerm, setSearchTerm] = useState('');
 
+    interface ValidationErrors {
+        nin?: string;
+        firstName?: string;
+        lastName?: string;
+        birthDate?: string;
+        address?: string;
+        pollingStation?: string;
+    }    
+
 
     interface FormData {
         nin: string;
@@ -35,7 +44,7 @@ const VoterRegistration = () => {
     const [notifications, setNotifications] = useState([]);
     const [showHistory, setShowHistory] = useState(false);
     const [showStats, setShowStats] = useState(false);
-    const [validationErrors, setValidationErrors] = useState({});
+    const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
     const [scanProgress, setScanProgress] = useState(0);
 
     const statsData = [
@@ -64,7 +73,7 @@ const VoterRegistration = () => {
     ];
 
     useEffect(() => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (formData.nin && !/^\d{10}$/.test(formData.nin)) {
             errors.nin = "Le NIN doit contenir 10 chiffres";
         }
@@ -74,16 +83,16 @@ const VoterRegistration = () => {
         setValidationErrors(errors);
     }, [formData]);
 
-    const checkDuplicates = (nin) => {
+    const checkDuplicates = (nin: string): boolean => {
         return voters.some(voter => voter.nin === nin);
     };
 
     const handleInputChange = (field: keyof FormData, value: string) => {
-  setFormData(prev => ({
-    ...prev,
-    [field]: value
-  }));
-};
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
 
     const handleScanDocument = () => {
         let progress = 0;
@@ -269,20 +278,20 @@ const VoterRegistration = () => {
                 <CardContent>
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
                         <TabsList>
-                            <TabsTrigger value="register">
+                            <TabsTrigger value="register" onClick={() => setActiveTab('register')}>
                                 <UserPlus className="w-4 h-4 mr-2" />
                                 Nouvel électeur
                             </TabsTrigger>
-                            <TabsTrigger value="list">
+                            <TabsTrigger value="list" onClick={() => setActiveTab('list')}>
                                 Liste des électeurs
                             </TabsTrigger>
+
                         </TabsList>
 
-                        <TabsContent value="register">
+                        <TabsContent value="register" activeValue={activeTab}>
                             <RegistrationForm />
                         </TabsContent>
-
-                        <TabsContent value="list">
+                        <TabsContent value="list" activeValue={activeTab}>
                             <div className="flex gap-4 mb-4">
                                 <div className="relative flex-1">
                                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
@@ -300,6 +309,7 @@ const VoterRegistration = () => {
                             </div>
                             <VotersList />
                         </TabsContent>
+
                     </Tabs>
 
                     {showStats && <Statistics />}

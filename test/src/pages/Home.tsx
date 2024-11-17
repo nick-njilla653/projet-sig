@@ -6,8 +6,11 @@ import './Home.css';
 const Home: React.FC = () => {
   const history = useHistory();
 
-  const handleNavigation = () => {
+  const handleNavigationToGestionBureauxVote = () => {
     history.push('/GestionBureauxVote');
+  };
+  const handleNavigationToVoterRegistration = () => {
+    history.push('/VoterRegistration');
   };
   return (
     <IonPage>
@@ -23,7 +26,8 @@ const Home: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <ExploreContainer />
-        <IonButton onClick={handleNavigation}>Go to Polling Station Management</IonButton>
+        <IonButton onClick={handleNavigationToGestionBureauxVote}>Go to Polling Station Management</IonButton> 
+        <IonButton onClick={handleNavigationToVoterRegistration}>Go to Voter Registration</IonButton>
       </IonContent>
     </IonPage>
   );
