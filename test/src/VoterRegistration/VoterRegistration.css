@@ -1,0 +1,172 @@
+/* Global styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f3f4f6;
+    color: #333;
+  }
+  
+  /* Utility classes */
+  .p-4 {
+    padding: 1rem;
+  }
+  
+  .mt-2 {
+    margin-top: 0.5rem;
+  }
+  
+  .mb-4 {
+    margin-bottom: 1rem;
+  }
+  
+  .mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .max-w-7xl {
+    max-width: 80rem;
+  }
+  
+  .w-full {
+    width: 100%;
+  }
+  
+  .flex {
+    display: flex;
+  }
+  
+  .space-y-4 > * + * {
+    margin-top: 1rem;
+  }
+  
+  .space-x-2 > * + * {
+    margin-left: 0.5rem;
+  }
+  
+  /* Card styles */
+  .card {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-header {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem;
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .card-content {
+    padding: 1rem;
+  }
+  
+  /* Button styles */
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .button-outline {
+    border: 1px solid #d1d5db;
+    background-color: transparent;
+    color: #374151;
+  }
+  
+  .button-outline:hover {
+    background-color: #f3f4f6;
+  }
+  
+  /* Input styles */
+  .input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    transition: border-color 0.3s;
+  }
+  
+  .input:focus {
+    border-color: #3b82f6;
+    outline: none;
+  }
+  
+  /* Alert styles */
+  .alert {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-left-width: 4px;
+    border-radius: 0.375rem;
+    background-color: #fef9c3;
+    border-color: #fbbf24;
+    color: #92400e;
+  }
+  
+  .alert-description {
+    margin-left: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Progress bar styles */
+  .progress {
+    background-color: #e5e7eb;
+    border-radius: 0.375rem;
+    overflow: hidden;
+  }
+  
+  .progress-bar {
+    height: 0.5rem;
+    background-color: #3b82f6;
+    transition: width 0.3s;
+  }
+  
+  /* Tabs styles */
+  .tabs-list {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .tabs-trigger {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .tabs-trigger:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .tabs-trigger-active {
+    border-bottom: 2px solid #3b82f6;
+    font-weight: 600;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .flex {
+      flex-direction: column;
+    }
+  
+    .tabs-list {
+      flex-direction: column;
+    }
+  
+    .space-x-2 > * + * {
+      margin-left: 0;
+      margin-top: 0.5rem;
+    }
+  }
