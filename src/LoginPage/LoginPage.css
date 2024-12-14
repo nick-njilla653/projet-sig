@@ -1,0 +1,70 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100%;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+  }
+  
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+  }
+  
+  .login-card ion-card-header {
+    background: var(--ion-color-primary);
+    color: white;
+    border-radius: 16px 16px 0 0;
+    padding: 20px;
+  }
+  
+  .login-card ion-card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .login-card ion-item {
+    --background: transparent;
+    --border-color: rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+  }
+  
+  .login-card ion-input {
+    --padding-start: 10px;
+    --padding-end: 10px;
+  }
+  
+  .login-card ion-select {
+    width: 100%;
+  }
+  
+  .error-message {
+    color: var(--ion-color-danger);
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  ion-button[type="submit"] {
+    margin-top: 20px;
+    --border-radius: 10px;
+    font-weight: bold;
+  }
+  
+  @media (max-width: 576px) {
+    .login-container {
+      padding: 10px;
+    }
+  
+    .login-card {
+      margin: 0;
+    }
+  }

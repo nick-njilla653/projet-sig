@@ -1,0 +1,310 @@
+/* Variables globales */
+:root {
+    --ion-color-success-contrast: #ffffff;
+    --ion-color-warning-contrast: #ffffff;
+    --ion-color-danger-contrast: #ffffff;
+    --stats-card-height: 100px;
+    --chart-height: 400px;
+    --transition-speed: 0.3s;
+  }
+  
+  /* Styles communs */
+  .centered-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Styles de la page de connexion */
+  .login-page {
+    --background: #f5f7fa;
+  }
+  
+  .login-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .login-card {
+    max-width: 400px;
+    width: 100%;
+    margin: 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-card ion-card-header {
+    padding: 24px 20px;
+  }
+  
+  .login-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .login-form ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    margin-bottom: 16px;
+  }
+  
+  .login-button {
+    margin-top: 24px;
+  }
+  
+  /* Styles de la page des résultats */
+  .results-page {
+    --background: #f5f7fa;
+    padding: 16px;
+  }
+  
+  .info-card, .results-card {
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  .info-card ion-card-header, 
+  .results-card ion-card-header {
+    padding: 16px;
+    background: #fafbfc;
+  }
+  
+  .info-card ion-card-title, 
+  .results-card ion-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+  
+  .results-input-item {
+    --padding-start: 0;
+    margin-bottom: 12px;
+  }
+  
+  .results-input-item ion-label {
+    font-weight: 500;
+    color: var(--ion-color-medium);
+  }
+  
+  .results-submit-button {
+    margin-top: 24px;
+    --box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
+  }
+  
+  /* Styles des statistiques */
+  .stats-modal {
+    --height: 90%;
+    --border-radius: 16px 16px 0 0;
+  }
+  
+  .stats-content {
+    --background: #f5f7fa;
+  }
+  
+  .stats-grid {
+    padding: 16px;
+  }
+  
+  .stat-card {
+    margin: 8px;
+    border-radius: 12px;
+    transition: transform var(--transition-speed);
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .stat-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  
+  .stat-card h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 8px 0;
+    color: var(--ion-color-dark);
+  }
+  
+  .stat-card p {
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+  
+  .chart-selector {
+    margin: 16px;
+    --background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  .chart-card {
+    margin: 16px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .chart-container {
+    height: var(--chart-height);
+    padding: 16px;
+  }
+  
+  /* Styles du tableau des résultats */
+  .results-table-card {
+    margin: 16px;
+    border-radius: 12px;
+  }
+  
+  .results-table-card ion-item {
+    --padding-start: 16px;
+    --padding-end: 16px;
+  }
+  
+  /* Styles des badges et indicateurs */
+  ion-badge {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  
+  .percentage-badge {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+  }
+  
+  /* Styles des tooltips du graphique */
+  .custom-tooltip {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .tooltip-label {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .tooltip-data {
+    color: var(--ion-color-medium);
+    margin: 2px 0;
+  }
+  
+  /* Styles des animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in {
+    animation: fadeIn var(--transition-speed) ease-out;
+  }
+  
+  /* Styles responsifs */
+  @media (max-width: 768px) {
+    .stats-grid ion-col {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+  
+    .chart-container {
+      height: 300px;
+    }
+  
+    .stat-card h2 {
+      font-size: 20px;
+    }
+  
+    .stat-icon {
+      font-size: 24px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .login-card {
+      margin: 16px;
+    }
+  
+    .stats-modal {
+      --height: 100%;
+      --border-radius: 0;
+    }
+  
+    .stat-card {
+      margin: 4px;
+    }
+  
+    .chart-container {
+      height: 250px;
+    }
+  }
+  
+  /* États de focus et d'accessibilité */
+  ion-button:focus,
+  ion-item:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb), 0.3);
+  }
+  
+  /* Mode sombre */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #1a1a1a;
+      --card-background: #2d2d2d;
+    }
+  
+    .login-page,
+    .results-page,
+    .stats-content {
+      --background: var(--background);
+    }
+  
+    .stat-card,
+    .info-card,
+    .results-card,
+    .chart-card {
+      --ion-background-color: var(--card-background);
+    }
+  
+    .custom-tooltip {
+      background: rgba(45, 45, 45, 0.95);
+      color: #ffffff;
+    }
+  
+    .tooltip-data {
+      color: #cccccc;
+    }
+  }
+  
+  /* Utilitaires */
+  .flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .space-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  

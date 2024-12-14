@@ -1,0 +1,261 @@
+
+/* Variables globales */
+:root {
+    --header-height: 56px;
+    --footer-height: 48px;
+    --transition-speed: 0.3s;
+  }
+  
+  /* Styles de la page de connexion */
+  .login-page {
+    --background: #f5f7fa;
+  }
+  
+  .login-container {
+    min-height: calc(100vh - var(--header-height) - var(--footer-height));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+  }
+  
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    margin: 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-card ion-card-header {
+    padding: 24px 20px;
+    background: var(--ion-color-light);
+  }
+  
+  .login-card ion-card-title {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+  
+  .login-card ion-card-content {
+    padding: 24px;
+  }
+  
+  /* Form styles */
+  .login-form ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --highlight-height: 2px;
+    margin-bottom: 16px;
+  }
+  
+  .login-form ion-label {
+    font-weight: 500;
+    font-size: 16px;
+  }
+  
+  .login-form ion-input,
+  .login-form ion-select {
+    --padding-start: 16px;
+    --padding-end: 16px;
+    margin-top: 8px;
+  }
+  
+  /* Error message */
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ion-color-danger);
+    background: var(--ion-color-danger-tint);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 16px 0;
+  }
+  
+  /* Support Modal */
+  .support-modal {
+    --height: 90%;
+    --border-radius: 16px 16px 0 0;
+  }
+  
+  ion-searchbar {
+    padding: 0;
+    --box-shadow: none;
+    --border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  
+  /* FAQ Accordion */
+  ion-accordion-group {
+    margin-bottom: 24px;
+  }
+  
+  ion-accordion {
+    margin-bottom: 8px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  ion-accordion ion-item {
+    --inner-padding-end: 0;
+    --padding-start: 16px;
+    --padding-end: 16px;
+  }
+  
+  ion-accordion-group ion-badge {
+    text-transform: uppercase;
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 12px;
+  }
+  
+  /* Support form */
+  .support-form ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    margin-bottom: 16px;
+  }
+  
+  ion-textarea {
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    min-height: 120px;
+  }
+  
+  /* Help links */
+  .help-links {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--ion-color-light);
+  }
+  
+  .help-links ion-button {
+    font-size: 14px;
+    --color: var(--ion-color-medium);
+  }
+  
+  /* Footer */
+  .footer-content {
+    padding: 12px;
+    text-align: center;
+    color: var(--ion-color-medium);
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Loading states */
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .login-card {
+      margin: 16px;
+    }
+  
+    .support-modal {
+      --height: 100%;
+      --border-radius: 0;
+    }
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .login-container {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    }
+  
+    .login-card {
+      --background: #2d2d2d;
+    }
+  
+    .error-message {
+      background: rgba(var(--ion-color-danger-rgb), 0.2);
+    }
+  
+    ion-accordion {
+      --background: #2d2d2d;
+    }
+  
+    .help-links {
+      border-top-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+  
+  /* Utility classes */
+  .text-center {
+    text-align: center;
+  }
+  
+  .mt-2 {
+    margin-top: 16px;
+  }
+  
+  .mb-2 {
+    margin-bottom: 16px;
+  }
+  
+  .p-2 {
+    padding: 16px;
+  }
+  
+  /* Interactive states */
+  ion-button {
+    transition: opacity var(--transition-speed);
+  }
+  
+  ion-button:active {
+    opacity: 0.8;
+  }
+  
+  ion-item {
+    transition: background-color var(--transition-speed);
+  }
+  
+  ion-item:active {
+    --background: var(--ion-color-light);
+  }
+  
+  /* Toast customization */
+  ion-toast {
+    --background: var(--ion-color-dark);
+    --color: var(--ion-color-dark-contrast);
+    --border-radius: 8px;
+    --button-color: var(--ion-color-primary);
+  }
+  
+  /* Progress bar */
+  ion-progress-bar {
+    --buffer-background: rgba(var(--ion-color-primary-rgb), 0.2);
+    --progress-background: var(--ion-color-primary);
+  }
+  

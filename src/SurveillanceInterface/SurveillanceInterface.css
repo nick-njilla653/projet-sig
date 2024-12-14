@@ -1,0 +1,317 @@
+
+/* Variables globales */
+:root {
+    --ion-safe-area-top: env(safe-area-inset-top);
+    --ion-safe-area-bottom: env(safe-area-inset-bottom);
+    --severity-high: var(--ion-color-danger);
+    --severity-medium: var(--ion-color-warning);
+    --severity-low: var(--ion-color-success);
+  }
+  
+  /* Page de connexion */
+  .login-page {
+    --background: #f5f7fa;
+  }
+  
+  .login-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    margin: 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-card ion-card-header {
+    padding: 24px 20px;
+    background: var(--ion-color-light);
+  }
+  
+  .login-card ion-card-title {
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ion-color-danger);
+    background: var(--ion-color-danger-tint);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 16px 0;
+  }
+  
+  /* Liste des incidents */
+  .incident-card {
+    margin: 16px 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .incident-card:active {
+    transform: scale(0.98);
+  }
+  
+  .incident-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  
+  .incident-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--ion-color-dark);
+  }
+  
+  .incident-description-preview {
+    color: var(--ion-color-medium);
+    margin: 8px 0;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .incident-details {
+    margin: 12px 0;
+    font-size: 14px;
+    color: var(--ion-color-medium);
+  }
+  
+  .incident-details ion-icon {
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  
+  /* Modal de détails d'incident */
+  .incident-detail-modal {
+    --height: 90%;
+    --border-radius: 16px 16px 0 0;
+  }
+  
+  .incident-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    color: var(--ion-color-dark);
+  }
+  
+  .badge-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 24px 0 12px 0;
+    color: var(--ion-color-dark);
+  }
+  
+  /* Mises à jour et timeline */
+  .updates-timeline {
+    padding: 16px 0;
+  }
+  
+  .update-item {
+    position: relative;
+    padding: 16px 0 16px 24px;
+    border-left: 2px solid var(--ion-color-primary);
+    margin-left: 16px;
+  }
+  
+  .update-item::before {
+    content: '';
+    position: absolute;
+    left: -9px;
+    top: 24px;
+    width: 16px;
+    height: 16px;
+    background: var(--ion-color-primary);
+    border-radius: 50%;
+  }
+  
+  .update-time {
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    margin-bottom: 8px;
+  }
+  
+  .update-content {
+    background: var(--ion-color-light);
+    padding: 12px;
+    border-radius: 8px;
+  }
+  
+  .update-content p {
+    margin: 0 0 8px 0;
+    color: var(--ion-color-dark);
+  }
+  
+  .update-content small {
+    color: var(--ion-color-medium);
+  }
+  
+  /* Preuves et documents */
+  .evidence-container {
+    margin: 16px 0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .evidence-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  /* Badges et indicateurs */
+  ion-badge {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  
+  .status-badge {
+    margin-top: 8px;
+  }
+  
+  .updates-count {
+    display: inline-block;
+    margin-left: 12px;
+    color: var(--ion-color-medium);
+  }
+  
+  /* Formulaire de nouvel incident */
+  ion-textarea {
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .incident-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  
+    .badge-container {
+      flex-wrap: wrap;
+    }
+  
+    .login-card {
+      margin: 16px;
+    }
+  }
+  
+  /* Dark Mode Support */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ion-background-color: #1a1a1a;
+    }
+  
+    .login-page {
+      --background: #121212;
+    }
+  
+    .incident-card {
+      --background: #2d2d2d;
+    }
+  
+    .incident-header h3 {
+      color: var(--ion-color-light);
+    }
+  
+    .incident-description-preview {
+      color: var(--ion-color-medium-tint);
+    }
+  
+    .update-content {
+      background: #2d2d2d;
+    }
+  
+    .error-message {
+      background: rgba(var(--ion-color-danger-rgb), 0.2);
+    }
+  }
+  
+  /* Loading States */
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  /* Toast et Alert personnalisés */
+  ion-toast {
+    --background: var(--ion-color-dark);
+    --color: var(--ion-color-dark-contrast);
+    --border-radius: 8px;
+    --button-color: var(--ion-color-primary);
+  }
+  
+  ion-alert {
+    --backdrop-opacity: 0.6;
+  }
+  
+  ion-alert .alert-wrapper {
+    border-radius: 12px;
+  }
+  
+  /* Utilitaires */
+  .ion-no-margin {
+    margin: 0;
+  }
+  
+  .ion-margin-vertical {
+    margin: 16px 0;
+  }
+  
+  .flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  

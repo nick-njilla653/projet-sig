@@ -1,0 +1,303 @@
+/* IntegrationInterface.css */
+
+/* IntegrationInterface.css */
+
+/* Variables globales */
+:root {
+    --card-border-radius: 12px;
+    --transition-speed: 0.3s;
+    --success-color: var(--ion-color-success);
+    --warning-color: var(--ion-color-warning);
+    --danger-color: var(--ion-color-danger);
+  }
+  
+  /* Styles généraux */
+  ion-content {
+    --background: #f5f7fa;
+  }
+  
+  /* Styles des cartes */
+  ion-card {
+    border-radius: var(--card-border-radius);
+    margin: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  ion-card-header {
+    padding: 16px;
+    background: var(--ion-color-light);
+  }
+  
+  ion-card-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  /* API et Export details */
+  .api-details,
+  .export-details {
+    padding: 8px 0;
+  }
+  
+  .api-details ion-item,
+  .export-details ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --background: transparent;
+  }
+  
+  .api-details ion-label,
+  .export-details ion-label {
+    margin: 8px 0;
+  }
+  
+  .api-details h3,
+  .export-details h3 {
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    margin-bottom: 4px;
+  }
+  
+  .api-details p,
+  .export-details p {
+    font-size: 15px;
+    color: var(--ion-color-dark);
+  }
+  
+  /* Badges */
+  ion-badge {
+    padding: 6px 12px;
+    border-radius: 12px;
+  }
+  
+  /* Modal styles */
+  ion-modal {
+    --height: auto;
+    --max-height: 90%;
+    --border-radius: 12px 12px 0 0;
+  }
+  
+  ion-modal ion-content {
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+  }
+  
+  ion-modal ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    margin-bottom: 16px;
+  }
+  
+  ion-modal ion-input,
+  ion-modal ion-select {
+    margin-top: 8px;
+  }
+  
+  /* Loading states */
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  /* Segment Controls */
+  ion-segment {
+    padding: 8px;
+    background: var(--ion-color-light);
+  }
+  
+  ion-segment-button {
+    --background-checked: var(--ion-color-primary);
+    --color-checked: var(--ion-color-primary-contrast);
+    --indicator-color: var(--ion-color-primary);
+    min-height: 40px;
+  }
+  
+  /* Buttons */
+  ion-button {
+    --border-radius: 8px;
+    margin: 8px 0;
+  }
+  
+  ion-button.button-block {
+    margin: 16px 0;
+  }
+  
+  /* Status indicators */
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .status-indicator ion-icon {
+    font-size: 18px;
+  }
+  
+  .status-active {
+    color: var(--success-color);
+  }
+  
+  .status-inactive {
+    color: var(--ion-color-medium);
+  }
+  
+  .status-pending {
+    color: var(--warning-color);
+  }
+  
+  .status-failed {
+    color: var(--danger-color);
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in {
+    animation: fadeIn var(--transition-speed) ease-out;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    ion-card {
+      margin: 8px;
+    }
+  
+    ion-modal {
+      --height: 100%;
+      --border-radius: 0;
+    }
+  }
+  
+  /* Dark Mode Support */
+  @media (prefers-color-scheme: dark) {
+    ion-content {
+      --background: #121212;
+    }
+  
+    ion-card {
+      --background: #1e1e1e;
+    }
+  
+    .api-details p,
+    .export-details p {
+      color: var(--ion-color-light);
+    }
+  
+    .loading-overlay {
+      background: rgba(0, 0, 0, 0.7);
+    }
+  }
+  
+  /* Toast et Alert personnalisés */
+  ion-toast {
+    --background: var(--ion-color-dark);
+    --color: var(--ion-color-dark-contrast);
+    --border-radius: 8px;
+    --button-color: var(--ion-color-primary);
+  }
+  
+  ion-alert {
+    --backdrop-opacity: 0.6;
+  }
+  
+  ion-alert .alert-wrapper {
+    border-radius: 12px;
+  }
+  
+  /* Progress Bar */
+  ion-progress-bar {
+    --progress-background: var(--ion-color-primary);
+    --buffer-background: rgba(var(--ion-color-primary-rgb), 0.2);
+  }
+  
+  /* Form styles */
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-group ion-label {
+    margin-bottom: 8px;
+    color: var(--ion-color-medium);
+  }
+  
+  /* Hover effects */
+  ion-card {
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+  }
+  
+  ion-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Utilitaires */
+  .text-center {
+    text-align: center;
+  }
+  
+  .mb-2 {
+    margin-bottom: 16px;
+  }
+  
+  .mt-2 {
+    margin-top: 16px;
+  }
+  
+  .p-2 {
+    padding: 16px;
+  }
+  
+  .flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+.progress-details {
+    margin-top: 20px;
+  }
+  
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ion-color-danger);
+    background: var(--ion-color-danger-tint);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 16px 0;
+  }
+  
+  .export-progress {
+    padding: 20px;
+  }
+  
+  .export-progress h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 16px 0;
+  }
+  
+  .badge-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }

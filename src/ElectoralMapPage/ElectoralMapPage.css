@@ -1,0 +1,118 @@
+/* ElectoralMapPage.css */
+.electoral-map-page {
+    --background: var(--ion-color-light);
+  }
+  
+  .map-searchbar {
+    --box-shadow: none;
+    --border-radius: 8px;
+    --background: var(--ion-color-light);
+    padding: 0 1rem;
+  }
+  
+  .map-container {
+    position: relative;
+    height: 50vh;
+    background: white;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 1000;
+  }
+  
+  .loading-overlay p {
+    margin-top: 1rem;
+    color: var(--ion-color-medium);
+  }
+  
+  .region-details {
+    padding: 1rem;
+  }
+  
+  .region-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .region-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+  
+  .stat-box {
+    background: var(--ion-color-light);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--ion-color-medium);
+    margin-bottom: 0.5rem;
+  }
+  
+  .stat-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+  
+  .results-section {
+    margin-top: 1.5rem;
+  }
+  
+  .results-section h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin-bottom: 1rem;
+  }
+  
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem 0;
+  }
+  
+  .candidate-info h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ion-color-dark);
+  }
+  
+  .party-name {
+    font-size: 0.875rem;
+    color: var(--ion-color-medium);
+  }
+  
+  .vote-info {
+    text-align: right;
+  }
+  
+  .vote-count {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--ion-color-medium);
+    margin-top: 0.25rem;
+  }
