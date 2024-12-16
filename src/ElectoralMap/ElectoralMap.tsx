@@ -1,556 +1,528 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle } from 'react';
+import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import {
-  IonContent,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
-  IonButton,
-  IonIcon,
-  IonCard,
-  IonCardContent,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonBadge,
+  IonSearchbar,
   IonSegment,
   IonSegmentButton,
-  IonFab,
-  IonFabButton,
-  IonSelect,
-  IonSelectOption
+  IonLabel,
+  IonCard,
+  IonCardContent,
+  IonSpinner,
+  IonIcon,
+  IonButton,
+  IonBadge,
+  IonChip,
+  IonList,
+  IonItem,
+  IonBreadcrumbs,
+  IonBreadcrumb,
 } from '@ionic/react';
 import {
-  layers,
+  map,
   statsChart,
+  peopleCircle,
   informationCircle,
-  closeOutline,
-  searchOutline
+  arrowBack,
+  layersOutline,
+  alertCircle,
 } from 'ionicons/icons';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import ElectoralMapService, { ElectionData, GeoJsonData } from './ElectoralMapService';
+import {
+  getParticipationColor,
+  getResultsColor,
+  calculateBounds,
+  formatNumber,
+  calculateParticipationStats,
+} from './mapUtils';
+
+
+
+// Import des types et interfaces
+import {
+  ElectoralMapProps,
+  ElectoralMapRef,
+  ElectoralFeatureProperties,
+  RegionStats,
+  PartyResult,
+  SearchResult,
+  MapStyle,
+  LegendItem
+} from './electoral-map.types';
+import { ElectoralFeature, GeoJsonFeature, GeoJsonCollection } from './geo-types';
+import { Feature, Geometry } from 'geojson';
+import L, { StyleFunction } from 'leaflet';
+
 
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer
-} from 'recharts';
-import L from 'leaflet';
-import { MapContainer, TileLayer, GeoJSON as ReactGeoJSON, useMap } from 'react-leaflet';
-import { GeoJSON, Layer, LeafletMouseEvent } from 'leaflet';
-import { Feature, FeatureCollection, Geometry, GeoJsonProperties } from 'geojson';
-import 'leaflet/dist/leaflet.css';
-import { ElectoralMapService } from './ElectoralMapService';
-import {
-  CustomGeometry,
-  CustomFeature,
-  CustomFeatureCollection,
-  GeoFeatureGeometry,
-  GeoFeatureProperties,
-  GeoFeature,
-  GeoData,
-  ElectoralStats,
-  CandidateResult,
-  LocationLevel,
-  LocationStats,
-  VotingCenter,
-  ElectoralStatistics,
-  GeoJsonFeature,
-  StyleFunctionType
-} from './Electoral';
+  EnrichedProperties,
+  EnrichedGeoJSON
+} from './geo-types';
+import GeoDataService from './GeoDataService';
 
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+// Import des hooks personnalisés
+import { useElectoralMap } from './useElectoralMap';
+import { useMapControls } from './useMapControls';
+
+import './ElectoralMap.css';
 
 
+type LeafletStyleFunction = (feature: Feature<Geometry, ElectoralFeatureProperties> | undefined) => L.PathOptions;
 
 
-let DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41]
-});
-
-L.Marker.prototype.options.icon = DefaultIcon;
-
-
-interface ElectoralMapProps {
+interface Props {
   viewType: 'general' | 'participation' | 'results';
   level: 'region' | 'department' | 'district';
+  onRegionSelect?: (region: string) => void;
   selectedRegion?: string;
-  onRegionSelect: (regionId: string) => void;
-  onViewChange?: (view: 'general' | 'participation' | 'results') => void;
-  onLevelChange?: (level: 'region' | 'department' | 'district') => void;
 }
 
 
+const ElectoralMap = forwardRef<ElectoralMapRef, ElectoralMapProps>((props, ref) => {
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedArea, setSelectedArea] = useState<Feature<Geometry, EnrichedProperties> | null>(null);
+  const [navigationHistory, setNavigationHistory] = useState<Array<{ id: string, name: string, level: string }>>([]);
+  const [loading, setLoading] = useState(false);
+  const [geoData, setGeoData] = useState<EnrichedGeoJSON | null>(null);
+  const mapRef = React.useRef<L.Map | null>(null);
+  const geoService = GeoDataService.getInstance();
 
-interface DistributionItem {
-  region: string;
-  count: number;
-  percentage: number;
-}
+  const {
 
-interface LegendItem {
-  color: string;
-  label: string;
-}
+    error,
+    stats,
+    searchResults,
+    setSearchResults,
+    selectedFeature,
+    setSelectedFeature,
+    handleSearch,
+    handleFeatureClick,
+    zoomToFeature,
+    refreshData
+  } = useElectoralMap(props);
 
+  const {
+    zoom,
+    center,
+    bounds,
+    handleZoomChange,
+    handleCenterChange,
+    handleBoundsChange
+  } = useMapControls();
 
-
-interface MapControlProps {
-  title: string;
-  options: {
-    value: string;
-    label: string;
-    icon?: string;
-  }[];
-  value: string;
-  onChange: (value: string) => void;
-}
-
-const ElectoralMap: React.FC<ElectoralMapProps> = ({
-  viewType,
-  level,
-  selectedRegion,
-  onRegionSelect,
-  onViewChange,
-  onLevelChange
-}) => {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const [map, setMap] = useState<L.Map | null>(null);
-  const [geoLayer, setGeoLayer] = useState<L.GeoJSON | null>(null);
-  const [activeLevel, setActiveLevel] = useState<'region' | 'department' | 'district'>('region');
-  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-  const [activeLayer, setActiveLayer] = useState<'general' | 'participation' | 'results'>('general');
-  const mapService = new ElectoralMapService();
-
-
-  // Fonction helper pour convertir GeoData en FeatureCollection
-  const convertGeoDataToFeatureCollection = (geoData: GeoData): CustomFeatureCollection => {
-    return {
-      type: 'FeatureCollection',
-      features: geoData.features.map(feature => ({
-        type: 'Feature',
-        properties: feature.properties,
-        geometry: {
-          type: feature.geometry.type as "Polygon" | "MultiPolygon",
-          coordinates: feature.geometry.coordinates
-        }
-      }))
-    };
-  };
-
-  
-
-
-  const getParticipationColor = (participation: number): string => {
-    switch (true) {
-      case participation > 75:
-        return '#2ecc71';
-      case participation > 50:
-        return '#f1c40f';
-      case participation > 25:
-        return '#e67e22';
-      default:
-        return '#e74c3c';
+  // Exposer les méthodes via la ref
+  useImperativeHandle(ref, () => ({
+    zoomToRegion: (regionId: string) => {
+      const feature = geoData?.features.find(f => f.properties.id === regionId);
+      if (feature) {
+        zoomToFeature(feature);
+      }
+    },
+    refreshData,
+    getCurrentView: () => ({
+      center,
+      zoom,
+      bounds: bounds || [[0, 0], [0, 0]]
+    }),
+    exportMapImage: async () => {
+      if (!mapRef.current) return new Blob();
+      // Logique d'export de l'image
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      // ... logique de rendu de la carte sur le canvas
+      return new Promise(resolve => {
+        canvas.toBlob(blob => {
+          resolve(blob || new Blob());
+        });
+      });
     }
-  };
+  }));
 
-  const getResultsColor = (stats: LocationStats | undefined): string => {
-    if (!stats?.candidates?.length) return '#cccccc';
-
-    const leadingCandidate = stats.candidates.reduce((prev, current) =>
-      (prev.percentage > current.percentage ? prev : current), stats.candidates[0]
-    );
-
-    const candidateColors: { [key: string]: string } = {
-      'Parti A': '#3498db',
-      'Parti B': '#e74c3c',
-    };
-
-    return candidateColors[leadingCandidate.party] || '#95a5a6';
-  };
-
-  const getFeatureStyle = (feature: Feature<Geometry, GeoJsonProperties>): L.PathOptions => {
-    if (!feature?.properties) {
-      return defaultStyle;
+  const loadGeoData = useCallback(async (level: string, parentId?: string) => {
+    setLoading(true);
+    try {
+      const data = await geoService.getGeoData(
+        level as 'region' | 'department' | 'district',
+        parentId
+      );
+      setGeoData(data);
+    } catch (error) {
+      console.error('Error loading geo data:', error);
+    } finally {
+      setLoading(false);
     }
-
-    const stats = mapService.getLocationStats(
-      feature.properties[`GID_${activeLevel === 'region' ? '1' : activeLevel === 'department' ? '2' : '3'}`]
-    );
-
-    return {
-      fillColor: activeLayer === 'participation'
-        ? getParticipationColor(stats?.participation || 0)
-        : activeLayer === 'results'
-          ? getResultsColor(stats)
-          : stats?.color || '#cccccc',
-      weight: 2,
-      opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillOpacity: 0.7
-    };
-  };
-
-  const defaultStyle: L.PathOptions = {
-    fillColor: '#cccccc',
-    weight: 2,
-    opacity: 1,
-    color: 'white',
-    dashArray: '3',
-    fillOpacity: 0.7
-  };
+  }, []);
 
 
 
-  const highlightFeature = (e: LeafletMouseEvent) => {
-    const layer = e.target;
-    layer.setStyle({
-      weight: 5,
-      color: '#666',
-      dashArray: '',
-      fillOpacity: 0.7
-    });
-  };
+  // Fonction onEachFeature pour GeoJSON
+  const onEachFeature = useCallback((feature: Feature<Geometry, EnrichedProperties>, layer: L.Layer) => {
+    if (!feature.properties) return;
 
-  const resetHighlight = (e: LeafletMouseEvent) => {
-    if (geoLayer) {
-      geoLayer.resetStyle(e.target);
-    }
-  };
-
-  const onEachFeature = (feature: Feature, layer: Layer) => {
     layer.on({
-      mouseover: (e: LeafletMouseEvent) => {
-        const l = e.target;
-        l.setStyle({
-          weight: 5,
-          color: '#666',
+      mouseover: (e: L.LeafletMouseEvent) => {
+        const layer = e.target;
+        layer.setStyle({
+          weight: 2,
           dashArray: '',
-          fillOpacity: 0.7
+          fillOpacity: 0.9,
         });
       },
-      mouseout: (e: LeafletMouseEvent) => {
-        const l = e.target;
-        l.setStyle(getFeatureStyle(feature as Feature));
-      },
-      click: (e: LeafletMouseEvent) => {
-        const id = feature.properties?.[`GID_${activeLevel === 'region' ? '1' : activeLevel === 'department' ? '2' : '3'}`];
-        if (id) {
-          setSelectedLocation(id);
-          onRegionSelect(id);
-          const map = e.target._map;
-          if (map) {
-            map.fitBounds(e.target.getBounds());
-          }
+      mouseout: (e: L.LeafletMouseEvent) => {
+        if (feature.properties.id !== selectedArea?.properties.id) {
+          const layer = e.target;
+          layer.setStyle(getFeatureStyle(feature));
         }
-      }
+      },
+      click: (e: L.LeafletMouseEvent) => {
+        handleAreaSelection(feature);
+      },
     });
+  }, [selectedArea]);
 
-    const name = feature.properties?.[`NAME_${activeLevel === 'region' ? '1' : activeLevel === 'department' ? '2' : '3'}`];
-    if (name) layer.bindPopup(name);
-  };
 
-  const getLegendItems = (): LegendItem[] => {
-    switch (viewType) {
-      case 'participation':
-        return [
-          { color: '#2ecc71', label: 'Très forte (>75%)' },
-          { color: '#f1c40f', label: 'Forte (50-75%)' },
-          { color: '#e67e22', label: 'Faible (25-50%)' },
-          { color: '#e74c3c', label: 'Très faible (<25%)' }
-        ];
-      case 'results':
-        return [
-          { color: '#3498db', label: 'Parti A en tête' },
-          { color: '#e74c3c', label: 'Parti B en tête' },
-          { color: '#95a5a6', label: 'Données non disponibles' }
-        ];
-      default:
-        return [
-          { color: '#3498db', label: 'Région' },
-          { color: '#2ecc71', label: 'Département' },
-          { color: '#e74c3c', label: 'Arrondissement' }
-        ];
+  // Gestionnaire de style pour les features
+  const getFeatureStyle: StyleFunction = useCallback((feature?: Feature<Geometry, EnrichedProperties>) => {
+    if (!feature?.properties) {
+      return {
+        fillColor: '#e0e0e0',
+        weight: 1,
+        opacity: 1,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.7
+      };
     }
-  };
 
+    const { properties } = feature;
+    const isSelected = properties.id === selectedArea?.properties?.id;
+
+    return {
+      fillColor: props.viewType === 'participation'
+        ? getParticipationColor(properties.participation)
+        : props.viewType === 'results'
+          ? getResultsColor(properties.results)
+          : '#e0e0e0',
+      weight: isSelected ? 3 : 1,
+      opacity: 1,
+      color: isSelected ? '#000' : '#666',
+      dashArray: '',
+      fillOpacity: 0.7
+    };
+  }, [props.viewType, selectedArea]);
+
+  const handleAreaSelection = useCallback((feature: Feature<Geometry, EnrichedProperties>) => {
+    setSelectedArea(feature);
+    setNavigationHistory(prev => [...prev, {
+      id: feature.properties.id,
+      name: feature.properties.name,
+      level: feature.properties.level
+    }]);
+
+    if (feature.properties.level !== 'district') {
+      const nextLevel = feature.properties.level === 'region' ? 'department' : 'district';
+      loadGeoData(nextLevel, feature.properties.id);
+    }
+
+    // Zoom sur la zone sélectionnée
+    if (mapRef.current && feature.geometry) {
+      const bounds = L.geoJSON(feature).getBounds();
+      mapRef.current.fitBounds(bounds);
+    }
+  }, [loadGeoData]);
+
+  const handleNavigationBack = useCallback((index: number) => {
+    const newHistory = navigationHistory.slice(0, index + 1);
+    setNavigationHistory(newHistory);
+
+    const lastItem = newHistory[newHistory.length - 1];
+    if (lastItem) {
+      loadGeoData(lastItem.level, lastItem.id);
+    } else {
+      loadGeoData('region');
+    }
+  }, [navigationHistory, loadGeoData]);
+
+  // Composant pour contrôler la vue de la carte
   const MapController: React.FC = () => {
     const map = useMap();
 
-    useEffect(() => {
-      // Mise à jour de la vue quand le niveau ou la couche change
-      const geoData = mapService.getGeoData(activeLevel);
-      const bounds = L.geoJSON(convertGeoDataToFeatureCollection(geoData)).getBounds();
-      map.fitBounds(bounds);
-    }, [activeLevel, activeLayer]);
+    React.useEffect(() => {
+      mapRef.current = map;
+
+      const handleViewportChange = () => {
+        handleZoomChange(map.getZoom());
+        handleCenterChange([map.getCenter().lat, map.getCenter().lng]);
+        handleBoundsChange([
+          [map.getBounds().getSouth(), map.getBounds().getWest()],
+          [map.getBounds().getNorth(), map.getBounds().getEast()]
+        ]);
+      };
+
+      map.on('zoomend moveend', handleViewportChange);
+      return () => {
+        map.off('zoomend moveend', handleViewportChange);
+      };
+    }, [map]);
 
     return null;
   };
-
-
-
-  const StatisticsPanel: React.FC = () => {
-    const stats = mapService.getElectoralStatistics();
-
-    return (
-      <IonCard className="statistics-panel">
-        <IonCardContent>
-          <div className="stats-grid">
-            <div className="stat-item">
-              <h3>Total Électeurs</h3>
-              <p>{stats.totalVoters.toLocaleString()}</p>
-            </div>
-            <div className="stat-item">
-              <h3>Participation</h3>
-              <p>{stats.totalParticipation}%</p>
-            </div>
-          </div>
-
-          <div className="distribution-chart">
-            <h3>Distribution par région</h3>
-            <div className="chart-container">
-              {stats.voterDistribution.map((item: DistributionItem) => (
-                <div key={item.region} className="chart-bar">
-                  <div
-                    className="bar"
-                    style={{ height: `${item.percentage}%` }}
-                    title={`${item.region}: ${item.count.toLocaleString()} électeurs`}
-                  />
-                  <span className="label">{item.region}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="trend-chart">
-            <h3>Tendance de participation</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={stats.participationTrend}>
-                <XAxis dataKey="time" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="participation" stroke="#8884d8" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </IonCardContent>
-      </IonCard>
-    );
-  };
-
-  const SearchControl: React.FC = () => {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<Array<{ id: string; name: string }>>([]);
-
-    const handleSearch = (query: string) => {
-      setSearchQuery(query);
-      if (query.length > 2) {
-        const results = mapService.searchLocations(query);
-        setSearchResults(results);
-      } else {
-        setSearchResults([]);
-      }
-    };
-
-    const handleResultClick = (locationId: string) => {
-      setSelectedLocation(locationId);
-      const location = mapService.getLocationStats(locationId);
-      if (location && map && geoLayer) {
-        // Trouver et zoomer sur la feature correspondante
-        geoLayer.eachLayer((layer: any) => {
-          if (layer.feature.properties[`GID_${activeLevel === 'region' ? '1' : activeLevel === 'department' ? '2' : '3'}`] === locationId) {
-            map.fitBounds(layer.getBounds());
-            layer.openPopup();
-          }
-        });
-      }
-    };
-
-    return (
-      <div className="search-control">
-        <input
-          type="text"
-          placeholder="Rechercher une localité..."
-          value={searchQuery}
-          onChange={(e) => handleSearch(e.target.value)}
-        />
-        {searchResults.length > 0 && (
-          <div className="search-results">
-            {searchResults.map(result => (
-              <div
-                key={result.id}
-                className="search-result-item"
-                onClick={() => handleResultClick(result.id)}
-              >
-                {result.name}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  useEffect(() => {
-    if (map && selectedLocation && geoLayer) {
-      // Ajouter une animation de pulsation sur la localité sélectionnée
-      geoLayer?.eachLayer((layer: any) => {
-        if (layer.feature.properties[`GID_${activeLevel === 'region' ? '1' : activeLevel === 'department' ? '2' : '3'}`] === selectedLocation) {
-          layer.setStyle({
-            weight: 5,
-            color: '#3498db',
-            dashArray: '',
-            fillOpacity: 0.7,
-            className: 'pulsating-location'
-          });
-        }
-      });
+  // Générer les éléments de légende
+  const getLegendItems = (): LegendItem[] => {
+    switch (props.viewType) {
+      case 'participation':
+        return [
+          { color: getParticipationColor(90), label: '> 80%' },
+          { color: getParticipationColor(70), label: '60-80%' },
+          { color: getParticipationColor(50), label: '40-60%' },
+          { color: getParticipationColor(30), label: '20-40%' },
+          { color: getParticipationColor(10), label: '< 20%' }
+        ];
+      case 'results':
+        return stats?.partyDistribution?.map(party => ({
+          color: party.color,
+          label: party.partyName,
+          value: `${party.percentage.toFixed(1)}%`
+        })) || [];
+      default:
+        return [{ color: '#e0e0e0', label: 'Données générales' }];
     }
-  }, [selectedLocation, activeLevel]);
+  };
 
-  const renderLocationDetails = () => {
-    if (!selectedLocation) return null;
-
-    const stats = mapService.getLocationStats(selectedLocation);
-    if (!stats) return null;
-
+  if (error) {
     return (
-      <IonCard className="location-details-card">
+      <IonCard className="error-card">
         <IonCardContent>
-          <h2>{stats.name}</h2>
-          <IonList>
-            <IonItem>
-              <IonLabel>Électeurs inscrits</IonLabel>
-              <IonBadge slot="end">{stats.registeredVoters.toLocaleString()}</IonBadge>
-            </IonItem>
-            {stats.participation && (
-              <IonItem>
-                <IonLabel>Taux de participation</IonLabel>
-                <IonBadge slot="end" color="success">{stats.participation}%</IonBadge>
-              </IonItem>
-            )}
-            <IonItem lines="none">
-              <IonLabel>Résultats</IonLabel>
-            </IonItem>
-            {stats.candidates.map(candidate => (
-              <IonItem key={candidate.candidateId} className="candidate-result">
-                <IonLabel>
-                  <h3>{candidate.candidateName}</h3>
-                  <p>{candidate.party}</p>
-                </IonLabel>
-                <IonBadge slot="end" color="primary">{candidate.percentage}%</IonBadge>
-              </IonItem>
-            ))}
-          </IonList>
+          <IonIcon icon={alertCircle} color="danger" />
+          <p>Erreur de chargement des données : {error.message}</p>
+          <IonButton onClick={refreshData}>Réessayer</IonButton>
         </IonCardContent>
       </IonCard>
     );
-  };
+  }
+
 
   return (
-    <div className="electoral-map">
-      <div className="map-controls">
-        <IonSegment value={activeLevel} onIonChange={e => setActiveLevel(e.detail.value as any)}>
-          <IonSegmentButton value="region">
-            <IonLabel>Régions</IonLabel>
-          </IonSegmentButton>
-          <IonSegmentButton value="department">
-            <IonLabel>Départements</IonLabel>
-          </IonSegmentButton>
-          <IonSegmentButton value="district">
-            <IonLabel>Arrondissements</IonLabel>
-          </IonSegmentButton>
-        </IonSegment>
-
-        <IonSegment value={activeLayer} onIonChange={e => setActiveLayer(e.detail.value as any)}>
-          <IonSegmentButton value="general">
-            <IonIcon icon={layers} />
-          </IonSegmentButton>
-          <IonSegmentButton value="participation">
-            <IonIcon icon={statsChart} />
-          </IonSegmentButton>
-          <IonSegmentButton value="results">
-            <IonIcon icon={informationCircle} />
-          </IonSegmentButton>
-        </IonSegment>
+    <div className="electoral-map" data-testid="electoral-map">
+      {/* Navigation */}
+      <div className="navigation-breadcrumbs">
+        <IonBreadcrumbs>
+          <IonBreadcrumb onClick={() => handleNavigationBack(-1)}>
+            Cameroun
+          </IonBreadcrumb>
+          {navigationHistory.map((item, index) => (
+            <IonBreadcrumb
+              key={item.id}
+              onClick={() => handleNavigationBack(index)}
+            >
+              {item.name}
+            </IonBreadcrumb>
+          ))}
+        </IonBreadcrumbs>
       </div>
 
-      <MapContainer
-        center={[7.3697, 12.3547]}
-        zoom={6}
-        className="map-container"
-        zoomControl={true}
-        attributionControl={true}
-      >
-        <TileLayer
-          attribution='© OpenStreetMap contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={18}
-        />
-        <ReactGeoJSON
-          key={`${activeLevel}-${activeLayer}`}
-          data={convertGeoDataToFeatureCollection(mapService.getGeoData(activeLevel))}
-          style={(feature) => {
-            if (!feature) return defaultStyle;
-            return getFeatureStyle(feature as Feature<Geometry, GeoJsonProperties>);
-          }}
-          onEachFeature={(feature, layer: L.Layer) => {
-            layer.on({
-              mouseover: (e) => {
-                const target = e.target as L.Polyline;
-                target.setStyle({
-                  weight: 5,
-                  color: '#666',
-                  dashArray: '',
-                  fillOpacity: 0.7
-                });
-              },
-              mouseout: (e) => {
-                const target = e.target as L.Polyline;
-                target.setStyle(getFeatureStyle(feature as Feature<Geometry, GeoJsonProperties>));
-              },
-              click: (e) => {
-                const target = e.target as L.Polyline;
-                const id = feature.properties?.[`GID_${activeLevel === 'region' ? '1' : activeLevel === 'department' ? '2' : '3'}`];
-                if (id) {
-                  setSelectedLocation(id);
-                  onRegionSelect(id);
-                  const map = useMap();
-                  if (target.getBounds && map) {
-                    map.fitBounds(target.getBounds());
-                  }
-                }
-              }
-            });
+      {/* Carte */}
+      <div className="map-container">
+        {loading ? (
+          <div className="loading-overlay">
+            <IonSpinner name="crescent" />
+            <p>Chargement de la carte...</p>
+          </div>
+        ) : (
+          <MapContainer
+            center={[7.3697, 12.3547]}
+            zoom={6}
+            className="map"
+            ref={mapRef}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            {geoData && (
+              <GeoJSON
+                key={props.viewType + geoData.name}
+                data={geoData}
+                style={getFeatureStyle}
+                onEachFeature={onEachFeature}
+              />
+            )}
+          </MapContainer>
+        )}
+      </div>
 
-            if (feature.properties) {
-              const name = feature.properties[`NAME_${activeLevel === 'region' ? '1' : activeLevel === 'department' ? '2' : '3'}`];
-              if (name) layer.bindPopup(name);
-            }
-          }}
-        />
-        <MapController />
-      </MapContainer>
+      {/* Panneau d'informations */}
+      {selectedArea && (
+        <IonCard className="feature-info">
+          <IonCardContent>
+            <div className="feature-header">
+              <h3>{selectedArea.properties.name}</h3>
+              <IonChip color="primary">
+                {selectedArea.properties.level}
+              </IonChip>
+            </div>
+
+            <div className="stats-grid">
+              <div className="stat-item">
+                <IonIcon icon={peopleCircle} />
+                <span>Électeurs inscrits</span>
+                <strong>{selectedArea.properties.totalVoters.toLocaleString()}</strong>
+              </div>
+              <div className="stat-item">
+                <IonIcon icon={statsChart} />
+                <span>Participation</span>
+                <strong>{selectedArea.properties.participation.toFixed(1)}%</strong>
+              </div>
+            </div>
+
+            {props.viewType === 'results' && selectedArea.properties.results && (
+              <div className="results-list">
+                {selectedArea.properties.results.map(result => (
+                  <div key={result.partyId} className="result-item">
+                    <span>{result.partyName}</span>
+                    <IonBadge color="primary">
+                      {result.percentage.toFixed(1)}%
+                    </IonBadge>
+                    <span className="votes">
+                      {result.votes.toLocaleString()} votes
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </IonCardContent>
+        </IonCard>
+      )}
+
+
 
       <div className="map-legend">
-        <h4>Légende</h4>
-        {getLegendItems().map((item, index) => (
-          <div key={index} className="legend-item">
-            <div className="legend-color" style={{ backgroundColor: item.color }} />
-            <span>{item.label}</span>
-          </div>
-        ))}
+        <IonCard>
+          <IonCardContent>
+            <h4>Légende</h4>
+            {props.viewType === 'participation' ? (
+              <div className="legend-items">
+                <div className="legend-item">
+                  <div className="color-box" style={{ backgroundColor: getParticipationColor(90) }} />
+                  <span>{'> 80%'}</span>
+                </div>
+                <div className="legend-item">
+                  <div className="color-box" style={{ backgroundColor: getParticipationColor(70) }} />
+                  <span>60-80%</span>
+                </div>
+                <div className="legend-item">
+                  <div className="color-box" style={{ backgroundColor: getParticipationColor(50) }} />
+                  <span>40-60%</span>
+                </div>
+                <div className="legend-item">
+                  <div className="color-box" style={{ backgroundColor: getParticipationColor(30) }} />
+                  <span>20-40%</span>
+                </div>
+                <div className="legend-item">
+                  <div className="color-box" style={{ backgroundColor: getParticipationColor(10) }} />
+                  <span>{'< 20%'}</span>
+                </div>
+              </div>
+            ) : props.viewType === 'results' ? (
+              <div className="legend-items">
+                {/* Légende des partis politiques */}
+                <div className="legend-item">
+                  <div className="color-box" style={{ backgroundColor: '#2166ac' }} />
+                  <span>Parti A en tête</span>
+                </div>
+                <div className="legend-item">
+                  <div className="color-box" style={{ backgroundColor: '#d73027' }} />
+                  <span>Parti B en tête</span>
+                </div>
+                <div className="legend-item">
+                  <div className="color-box" style={{ backgroundColor: '#1a9850' }} />
+                  <span>Parti C en tête</span>
+                </div>
+              </div>
+            ) : (
+              <div className="legend-items">
+                <div className="legend-item">
+                  <div className="color-box" style={{ backgroundColor: '#e0e0e0' }} />
+                  <span>Données générales</span>
+                </div>
+              </div>
+            )}
+          </IonCardContent>
+        </IonCard>
       </div>
 
-      {selectedLocation && renderLocationDetails()}
+      {stats && (
+        <div className="statistics-panel">
+          <IonCard>
+            <IonCardContent>
+              <h4>
+                <IonIcon icon={statsChart} />
+                Statistiques {props.level === 'region' ? 'régionales' : props.level === 'department' ? 'départementales' : 'locales'}
+              </h4>
+
+              <div className="stats-summary">
+                <div className="stat-box">
+                  <span className="stat-label">Total des inscrits</span>
+                  <strong>{formatNumber(stats.totalVoters)}</strong>
+                </div>
+                <div className="stat-box">
+                  <span className="stat-label">Participation moyenne</span>
+                  <strong>{stats.averageParticipation.toFixed(1)}%</strong>
+                </div>
+                <div className="stat-box">
+                  <span className="stat-label">Bureaux de vote</span>
+                  <strong>{formatNumber(stats.votingStations)}</strong>
+                </div>
+              </div>
+
+              {stats.participationTrend && (
+                <div className="participation-chart">
+                  <h5>Évolution de la participation</h5>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={stats.participationTrend}>
+                      <XAxis dataKey="hour" />
+                      <YAxis domain={[0, 100]} />
+                      <Tooltip />
+                      <Line
+                        type="monotone"
+                        dataKey="participation"
+                        stroke="#2196f3"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              {props.viewType === 'results' && stats?.partyDistribution && (
+                <div className="results-distribution">
+                  <h5>Distribution des résultats</h5>
+                  {stats.partyDistribution.map((party: PartyResult) => (
+                    <div key={party.partyId} className="party-result-bar">
+                      <div className="party-info">
+                        <span>{party.partyName}</span>
+                        <strong>{party.percentage.toFixed(1)}%</strong>
+                      </div>
+                      <div className="progress-bar">
+                        <div
+                          className="progress"
+                          style={{
+                            width: `${party.percentage}%`,
+                            backgroundColor: party.color
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </IonCardContent>
+          </IonCard>
+        </div>
+      )}
     </div>
   );
-};
+});
 
 export default ElectoralMap;

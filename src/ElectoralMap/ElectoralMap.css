@@ -1,262 +1,503 @@
-/* ElectoralMap.css */
+/* electoral-map-gaming.css */
+
 :root {
-  --primary-glow: #4a9eff;
-  --secondary-glow: #6366f1;
-  --accent-color: #22d3ee;
-  --background-dark: #0f172a;
-  --surface-dark: #1e293b;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --border-glow: 0 0 15px rgba(74, 158, 255, 0.3);
-  --neon-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+  --primary-glow: #2196f3;
+  --secondary-glow: #00ff8c;
+  --warning-glow: #ff9100;
+  --danger-glow: #ff2a6d;
+  --background-dark: #0a1929;
+  --background-light: #162b44;
+  --text-primary: #ffffff;
+  --text-secondary: #a0b9d6;
+  --border-glow: 0 0 10px var(--primary-glow);
+  --hover-glow: 0 0 20px var(--secondary-glow);
+  --panel-background: rgba(10, 25, 41, 0.85);
 }
 
 .electoral-map {
+  background: var(--background-dark);
+  min-height: 100vh;
+  color: var(--text-primary);
   position: relative;
-  width: 100%;
-  height: 100vh;
-  background: linear-gradient(135deg, var(--background-dark), #162544);
-  color: var(--text-primary);
-}
-
-.map-container {
-  width: 100%;
-  height: calc(100vh - 120px);
-  position: absolute;
-  top: 0;
-  z-index: 1;
-  border-radius: 16px;
-  box-shadow: var(--border-glow);
   overflow: hidden;
 }
 
-/* Contrôles de la carte */
-.map-controls {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  z-index: 1000;
-  background: rgba(30, 41, 59, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 16px;
-  border-radius: 16px;
-  box-shadow: var(--neon-shadow);
-  border: 1px solid rgba(74, 158, 255, 0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  animation: fadeIn 0.3s ease-out;
-}
-
-.map-legend {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  z-index: 1000;
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-/* Barre de recherche futuriste */
-.search-control {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  width: 300px;
-}
-
-.search-control input {
-  width: 100%;
-  padding: 12px 20px;
-  border-radius: 12px;
-  background: rgba(30, 41, 59, 0.9);
-  border: 1px solid rgba(74, 158, 255, 0.3);
-  color: var(--text-primary);
-  backdrop-filter: blur(8px);
-  transition: all 0.3s ease;
-}
-
-.search-control input:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: var(--neon-shadow);
-}
-
-/* Résultats de recherche avec effet néon */
-.search-results {
-  margin-top: 8px;
-  background: rgba(30, 41, 59, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  border: 1px solid rgba(74, 158, 255, 0.2);
-  overflow: hidden;
-  animation: slideDown 0.3s ease-out;
-}
-
-.search-result-item {
-  padding: 12px 20px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent;
-}
-
-.search-result-item:hover {
-  background: rgba(74, 158, 255, 0.1);
-  border-left-color: var(--accent-color);
-  transform: translateX(5px);
-}
-
-/* Panneau de statistiques avec effet de verre */
-.statistics-panel {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  width: 350px;
-  z-index: 1000;
-  background: rgba(30, 41, 59, 0.9);
-  backdrop-filter: blur(12px);
-  border-radius: 16px;
-  box-shadow: var(--neon-shadow);
-  border: 1px solid rgba(74, 158, 255, 0.2);
-  transition: transform 0.3s ease;
-}
-
-.statistics-panel:hover {
-  transform: translateY(-5px);
-}
-
-/* Segments de contrôle modernisés */
-ion-segment {
-  background: rgba(15, 23, 42, 0.6);
-  border-radius: 12px;
-  padding: 4px;
-  border: 1px solid rgba(74, 158, 255, 0.2);
-}
-
-ion-segment-button {
-  --background-checked: linear-gradient(135deg, var(--primary-glow), var(--secondary-glow));
-  --color-checked: var(--text-primary);
-  --indicator-color: transparent;
-  border-radius: 8px;
-  min-height: 44px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-ion-segment-button::before {
+/* Effet de grille de fond */
+.electoral-map::before {
   content: '';
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, rgba(74, 158, 255, 0.2), rgba(99, 102, 241, 0.2));
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  background: 
+    linear-gradient(rgba(16, 42, 67, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 42, 67, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  transform: perspective(500px) rotateX(60deg);
+  transform-origin: top;
+  pointer-events: none;
+  animation: gridMove 20s linear infinite;
+  z-index: 0;
 }
 
-ion-segment-button:hover::before {
-  opacity: 1;
+@keyframes gridMove {
+  from { background-position: 0 0; }
+  to { background-position: 0 20px; }
 }
 
-/* Carte des détails avec animation */
-.location-details-card {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 380px;
-  max-width: calc(100% - 40px);
-  z-index: 1000;
-  background: rgba(30, 41, 59, 0.95);
-  backdrop-filter: blur(12px);
-  border-radius: 16px;
-  box-shadow: var(--neon-shadow);
-  border: 1px solid rgba(74, 158, 255, 0.2);
-  animation: slideInRight 0.4s ease-out;
+/* Contrôles de la carte */
+.map-controls {
+  background: var(--panel-background);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: var(--border-glow);
+  animation: pulseGlow 4s ease-in-out infinite;
 }
 
-/* Animations fluides */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(100px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideDown {
-  from {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* Effets de survol pour les régions */
-.region-hover {
-  opacity: 0.8;
-  filter: brightness(1.2);
+.location-search {
+  --background: rgba(255, 255, 255, 0.1);
+  --color: var(--text-primary);
+  --placeholder-color: var(--text-secondary);
+  --border-radius: 8px;
+  --box-shadow: 0 0 15px rgba(33, 150, 243, 0.2);
   transition: all 0.3s ease;
 }
 
-/* Style Leaflet personnalisé */
+.location-search:focus-within {
+  --background: rgba(255, 255, 255, 0.15);
+  --box-shadow: var(--hover-glow);
+  transform: scale(1.02);
+}
+
+/* Conteneur de carte avec effet de bordure lumineux */
+.map-container {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--border-glow);
+  position: relative;
+}
+
+/* Style de la carte Leaflet */
 .leaflet-container {
-  background: var(--background-dark);
+  background: var(--background-dark) !important;
 }
 
-.leaflet-popup-content-wrapper {
-  background: rgba(30, 41, 59, 0.95);
-  backdrop-filter: blur(12px);
+.leaflet-tile-pane {
+  filter: saturate(0.8) hue-rotate(180deg) brightness(0.8);
+}
+
+/* Info panel avec effet holographique */
+.feature-info {
+  background: var(--panel-background);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(33, 150, 243, 0.3);
   border-radius: 12px;
-  border: 1px solid rgba(74, 158, 255, 0.2);
-  color: var(--text-primary);
+  transform: translateZ(0);
+  transition: all 0.3s ease;
 }
 
-.leaflet-popup-tip {
-  background: rgba(30, 41, 59, 0.95);
+.feature-info:hover {
+  transform: translateZ(0) scale(1.02);
+  box-shadow: var(--hover-glow);
 }
 
-/* Responsive Design amélioré */
+.stat-item {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 15px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-item::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+/* Graphiques et visualisations */
+.participation-chart {
+  background: var(--panel-background);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.recharts-line {
+  filter: drop-shadow(0 0 8px var(--primary-glow));
+}
+
+.party-result-bar {
+  margin: 15px 0;
+}
+
+.progress-bar {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
+  box-shadow: 0 0 10px var(--primary-glow);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animation de chargement futuriste */
+.loading-overlay {
+  background: var(--panel-background);
+  backdrop-filter: blur(8px);
+}
+
+.loading-overlay ion-spinner {
+  --color: var(--primary-glow);
+  width: 60px;
+  height: 60px;
+  transform-origin: center;
+  animation: spinnerPulse 2s ease-in-out infinite;
+}
+
+@keyframes spinnerPulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Légende interactive */
+.map-legend {
+  background: var(--panel-background);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  border-radius: 12px;
+  padding: 15px;
+  transition: all 0.3s ease;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.legend-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.color-box {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.legend-item:hover .color-box {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px currentColor;
+}
+
+/* Effets de survol et interactions */
+ion-button {
+  --background: transparent;
+  --background-hover: rgba(33, 150, 243, 0.2);
+  --background-activated: rgba(33, 150, 243, 0.3);
+  --box-shadow: var(--border-glow);
+  margin: 5px;
+  transition: all 0.3s ease;
+}
+
+ion-button:hover {
+  --box-shadow: var(--hover-glow);
+  transform: translateY(-2px);
+}
+
+ion-segment {
+  background: var(--background-light);
+  border-radius: 12px;
+  padding: 5px;
+}
+
+ion-segment-button {
+  --background-checked: rgba(33, 150, 243, 0.3);
+  --indicator-color: var(--primary-glow);
+  --color-checked: var(--text-primary);
+  --color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+ion-segment-button::part(indicator) {
+  box-shadow: var(--border-glow);
+}
+
+/* Animations de transition */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+}
+
+/* Responsive Design avec effets maintenus */
 @media (max-width: 768px) {
+  .electoral-map::before {
+    background-size: 15px 15px;
+  }
+
   .map-controls {
+    margin: 10px;
+  }
+
+  .feature-info {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 12px 12px 0 0;
+    max-height: 50vh;
+    overflow-y: auto;
+    z-index: 1000;
+  }
+
+  .map-legend {
+    position: fixed;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    width: calc(100% - 40px);
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
+    max-width: 90%;
+  }
+}
+/* Ajoutez ces styles à la fin du fichier electoral-map-gaming.css */
+
+/* Navigation hiérarchique */
+.navigation-breadcrumbs {
+  background: var(--panel-background);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  border-radius: 12px;
+  padding: 10px 15px;
+  margin: 10px;
+  box-shadow: var(--border-glow);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.navigation-breadcrumbs ion-breadcrumb {
+  --color: var(--text-secondary);
+  --color-active: var(--text-primary);
+  --color-hover: var(--primary-glow);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.navigation-breadcrumbs ion-breadcrumb:hover {
+  --color: var(--primary-glow);
+  transform: scale(1.05);
+}
+
+/* Feature header amélioré */
+.feature-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+.feature-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
+}
+
+.feature-header ion-chip {
+  --background: rgba(33, 150, 243, 0.2);
+  --color: var(--text-primary);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  box-shadow: var(--border-glow);
+}
+
+/* Grille de statistiques améliorée */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.stat-item {
+  background: rgba(33, 150, 243, 0.1);
+  border-radius: 12px;
+  padding: 1.2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-item ion-icon {
+  font-size: 2rem;
+  color: var(--primary-glow);
+  margin-bottom: 0.5rem;
+}
+
+.stat-item span {
+  display: block;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.stat-item strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 1.4rem;
+  text-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
+}
+
+/* Liste des résultats améliorée */
+.results-list {
+  margin-top: 1.5rem;
+}
+
+.result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.result-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.result-item ion-badge {
+  --background: var(--primary-glow);
+  --color: var(--text-primary);
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
+}
+
+.votes {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Ajustements responsifs */
+@media (max-width: 768px) {
+  .navigation-breadcrumbs {
+    margin: 10px;
+    padding: 8px 12px;
+    white-space: nowrap;
+    overflow-x: auto;
   }
 
-  .statistics-panel,
-  .location-details-card {
-    width: calc(100% - 40px);
-    left: 50%;
-    transform: translateX(-50%);
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+
+  .feature-header ion-chip {
+    margin-left: 0;
+  }
+
+  .result-item {
+    flex-direction: column;
+    gap: 0.8rem;
+    text-align: center;
+  }
+
+  .result-item ion-badge {
+    margin: 0.5rem 0;
   }
 }
 
-/* Support du mode sombre avancé */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary-glow: #60a5fa;
-    --secondary-glow: #818cf8;
-    --accent-color: #34d399;
+/* Animation pour les transitions de niveau */
+@keyframes levelTransition {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
   }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.level-transition {
+  animation: levelTransition 0.3s ease-out forwards;
+}
+
+/* Style des boutons de navigation */
+.navigation-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.navigation-buttons ion-button {
+  --background: rgba(33, 150, 243, 0.2);
+  --color: var(--text-primary);
+  --border-radius: 8px;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+}
+
+.navigation-buttons ion-button:hover {
+  --background: rgba(33, 150, 243, 0.3);
 }
