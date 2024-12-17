@@ -21,6 +21,19 @@ export interface GeoJsonCollection {
     features: GeoJsonFeature[];
 }
 
+export interface GeoJSON<T> {
+  type: "FeatureCollection";
+  features: GeoFeature<T>[];
+} 
+export interface GeoFeature<T> {
+  type: "Feature";
+  properties: T;
+  geometry: {
+    type: "MultiPolygon";
+    coordinates: number[][][][];
+  };
+}
+
 // Définition des propriétés de base pour les features électorales
 export interface ElectoralFeatureProperties {
     // Propriétés de base obligatoires
@@ -107,6 +120,7 @@ export interface RegionProperties extends BaseProperties {
   CC_1: string;
   HASC_1: string;
   ISO_1: string;
+  votes?: number;
 }
 
 // Propriétés des départements
@@ -116,6 +130,7 @@ export interface DepartmentProperties extends BaseProperties {
   NAME_1: string;
   NAME_2: string;
   VARNAME_2: string;
+  NL_NAME_2: string;
   TYPE_2: string;
   ENGTYPE_2: string;
   CC_2: string;
@@ -129,11 +144,14 @@ export interface DistrictProperties extends BaseProperties {
   GID_1: string;
   NAME_1: string;
   NAME_2: string;
+  NL_NAME_2: string;
   NAME_3: string;
   VARNAME_3: string;
+  NL_NAME_3: string;
   TYPE_3: string;
   ENGTYPE_3: string;
   CC_3: string;
+  HASC_3: string;
 }
 
 export interface CRS {

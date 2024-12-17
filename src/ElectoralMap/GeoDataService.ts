@@ -1,8 +1,8 @@
 // src/services/GeoDataService.ts
 
-import regionsData from '../GeoLocalisation/gadm41_CMR_1.json';
-import departmentsData from '../GeoLocalisation/gadm41_CMR_2.json';
-import districtsData from '../GeoLocalisation/gadm41_CMR_3.json';
+import { regionsData } from '../GeoLocalisation/gadm41_CMR_1';
+import { departmentsData }from '../GeoLocalisation/gadm41_CMR_2';
+import {districtsData} from '../GeoLocalisation/gadm41_CMR_3';
 import {
   CameroonGeoJSON,
   RegionProperties,
